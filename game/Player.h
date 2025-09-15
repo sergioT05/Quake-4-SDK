@@ -667,6 +667,7 @@ public:
 
 	virtual bool			ClientReceiveEvent( int event, int time, const idBitMsg &msg );
 	
+	//bool					IsMoving(void); 
 	bool					IsBeingTalkedTo	( void );
  	bool					IsReady			( void );
  	bool					IsRespawning	( void );
@@ -1156,6 +1157,12 @@ private:
 	
  	CLASS_STATES_PROTOTYPE( idPlayer );
 };
+
+/*
+ID_INLINE bool idPlayer::IsMoving(void) {
+	return &State_Legs_Idle != NULL;
+}
+*/
 
 ID_INLINE bool idPlayer::IsBeingTalkedTo( void ) {
 	return talkingNPC!=NULL;
