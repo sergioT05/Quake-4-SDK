@@ -4,7 +4,7 @@
 #include "../Game_local.h"
 #include "../Weapon.h"
 #include "../client/ClientEffect.h"
-#include "../Player.h"
+#include "../physics/Physics_Player.h"
 
 #ifndef __GAME_PROJECTILE_H__
 #include "../Projectile.h"
@@ -51,6 +51,13 @@ protected:
 	bool								idleEmpty;
 
 private:
+
+	/*
+	int					fireHeldTime;
+	int					chargeTime;
+	int					chargeDelay;
+	bool				fireForced;
+	*/
 
 	stateResult_t		State_Idle				( const stateParms_t& parms );
 	stateResult_t		State_Fire				( const stateParms_t& parms );
@@ -106,6 +113,14 @@ void rvWeaponRocketLauncher::Spawn ( void ) {
 	reloadRate = SEC2MS ( spawnArgs.GetFloat ( "reloadRate", ".8" ) );
 	
 	guideAccelTime = SEC2MS ( spawnArgs.GetFloat ( "lockAccelTime", ".25" ) );
+
+	/*
+	chargeTime = SEC2MS(spawnArgs.GetFloat("chargeTime"));
+	chargeDelay = SEC2MS(spawnArgs.GetFloat("chargeDelay"));
+
+	fireHeldTime = 0;
+	fireForced = false;
+	*/
 	
 	// Start rocket thread
 	rocketThread.SetName ( viewModel->GetName ( ) );
@@ -257,6 +272,12 @@ void rvWeaponRocketLauncher::Save( idSaveGame *saveFile ) const {
 	saveFile->WriteFloat( guideAccelTime );
 	
 	saveFile->WriteFloat ( reloadRate );
+	/*
+	saveFile->WriteInt(chargeTime);
+	saveFile->WriteInt(chargeDelay);
+	saveFile->WriteBool(fireForced);
+	saveFile->WriteInt(fireHeldTime);
+	*/
 	
 	rocketThread.Save( saveFile );
 }
@@ -288,7 +309,13 @@ void rvWeaponRocketLauncher::Restore( idRestoreGame *saveFile ) {
 	saveFile->ReadFloat( guideAccelTime );
 	
 	saveFile->ReadFloat ( reloadRate );
-	
+	/*
+	saveFile->ReadInt(chargeTime);
+	saveFile->ReadInt(chargeDelay);
+	saveFile->ReadBool(fireForced);
+	saveFile->ReadInt(fireHeldTime);
+	*/
+
 	rocketThread.Restore( saveFile, this );	
 }
 
@@ -446,16 +473,13 @@ stateResult_t rvWeaponRocketLauncher::State_Fire ( const stateParms_t& parms ) {
 	};	
 	switch ( parms.stage ) {
 		case STAGE_INIT:
-			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));	
-			/*
-			if (idPlayer::IsMoving == NULL) {
+			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
+			if (owner->xyspeed == 0.0f) {
 				Attack(false, 1, spread, 0, 1.0f);
 			}
 			else {
-				Attack(false, 1, 1.0, 0, 1.0f);
+				Attack(false, 4, 10, 0, 0.20f);
 			}
-			*/
-			Attack(false, 1, spread, 0, 1.0f);
 			PlayAnim ( ANIMCHANNEL_LEGS, "fire", parms.blendFrames );	
 			return SRESULT_STAGE ( STAGE_WAIT );
 	

@@ -667,7 +667,6 @@ public:
 
 	virtual bool			ClientReceiveEvent( int event, int time, const idBitMsg &msg );
 	
-	//bool					IsMoving(void); 
 	bool					IsBeingTalkedTo	( void );
  	bool					IsReady			( void );
  	bool					IsRespawning	( void );
@@ -795,6 +794,11 @@ public:
 	void					ClampCash( float minCash, float maxCash );
 	void					SetCash( float newCashAmount );
 	void					ResetCash();
+
+	float					xyspeed;
+	idPhysics_Player		physicsObj;			// player physics
+
+	
 // RITUAL END
 
 protected:
@@ -806,8 +810,7 @@ private:
 	jointHandle_t			hipJoint;
 	jointHandle_t			chestJoint;
 
-	idPhysics_Player		physicsObj;			// player physics
-
+	//WHERE PHYSICSOBJ USED TO BE
  	idList<aasLocation_t>	aasLocation;		// for AI tracking the player
 
 	idStr					modelName;			// current model name
@@ -817,7 +820,7 @@ private:
 	float					bobFrac;
 	float					bobfracsin;
 	int						bobCycle;			// for view bobbing and footstep generation
-	float					xyspeed;
+	//WHERE XYSPEED WAS!!!!!!!!! *********************
 	int						stepUpTime;
 	float					stepUpDelta;
 	float					idealLegsYaw;
@@ -1065,7 +1068,7 @@ private:
 	void					SetFocus					( playerFocus_t type, int focusTime, idEntity* ent, idUserInterface* ui );
 
 	void					Event_GetButtons			( void );
-	void					Event_GetMove				( void );
+	void					Event_GetMove(void);
 	void					Event_GetViewAngles			( void );
 	void					Event_SetViewAngles			( const idVec3 &vec );
 	void					Event_StopFxFov				( void );
@@ -1157,12 +1160,6 @@ private:
 	
  	CLASS_STATES_PROTOTYPE( idPlayer );
 };
-
-/*
-ID_INLINE bool idPlayer::IsMoving(void) {
-	return &State_Legs_Idle != NULL;
-}
-*/
 
 ID_INLINE bool idPlayer::IsBeingTalkedTo( void ) {
 	return talkingNPC!=NULL;

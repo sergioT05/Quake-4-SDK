@@ -118,10 +118,11 @@ public:	// common physics interface
 // RAVEN END
 
 	void					SetClipModelNoLink( idClipModel *clip );
+	playerPState_t			current;
 
 private:
 	// player physics state
-	playerPState_t			current;
+	//where current was *******************************************************
 	playerPState_t			saved;
 
 	// properties
