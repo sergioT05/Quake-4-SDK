@@ -1977,7 +1977,7 @@ void idPlayer::Spawn( void ) {
 		}
 // RAVEN BEGIN
 // mekberg: set to blaster now and disable the weapon.
-		idealWeapon = SlotForWeapon ( "weapon_blaster" ); 
+		idealWeapon = SlotForWeapon ( "weapon_M1911A1" ); 
 		Event_DisableWeapon( );
 // RAVEN END
 	} else {
@@ -3348,36 +3348,57 @@ bool idPlayer::UserInfoChanged( void ) {
 idPlayer::UpdateHudAmmo
 ===============
 */
-void idPlayer::UpdateHudAmmo( idUserInterface *_hud ) {
+void idPlayer::UpdateHudAmmo(idUserInterface* _hud) {
 	int inclip;
 	int ammoamount;
 
-	assert( weapon );
-	assert( _hud );
+	assert(weapon);
+	assert(_hud);
 
-	inclip		= weapon->AmmoInClip();
-	ammoamount	= weapon->AmmoAvailable();
+	inclip = weapon->AmmoInClip();
+	ammoamount = weapon->AmmoAvailable();
 
-	if ( ammoamount < 0 ) {
+	if (ammoamount < 0) {
 		// show infinite ammo
-		_hud->SetStateString( "player_ammo", "-1" );
-		_hud->SetStateString( "player_totalammo", "-1" );
-		_hud->SetStateFloat ( "player_ammopct", 1.0f );
-	} else if ( weapon->ClipSize ( ) && !gameLocal.isMultiplayer ) {
-		_hud->SetStateInt ( "player_clip_size", weapon->ClipSize() );
-		_hud->SetStateFloat ( "player_ammopct", (float)inclip / (float)weapon->ClipSize ( ) );
-		if ( weapon->ClipSize ( )==1) {
-			_hud->SetStateInt ( "player_totalammo", ammoamount );
+		_hud->SetStateString("player_ammo", "-1");
+		_hud->SetStateString("player_totalammo", "-1");
+		_hud->SetStateFloat("player_ammopct", 1.0f);
+	}
+	else if (weapon->ClipSize() && !gameLocal.isMultiplayer) {
+		_hud->SetStateInt("player_clip_size", weapon->ClipSize());
+		_hud->SetStateFloat("player_ammopct", (float)inclip / (float)weapon->ClipSize());
+		if (weapon->ClipSize() == 1) {
+			_hud->SetStateInt("player_totalammo", ammoamount);
 		}
 		else {
-			_hud->SetStateInt ( "player_totalammo", ammoamount - inclip );
+			_hud->SetStateInt("player_totalammo", ammoamount - inclip);
 		}
-		_hud->SetStateInt ( "player_ammo", inclip );
-	} else {
-		_hud->SetStateFloat ( "player_ammopct", (float)ammoamount / (float)weapon->maxAmmo );
-		_hud->SetStateInt ( "player_totalammo", ammoamount );
-		_hud->SetStateInt ( "player_ammo", -1 );
-	} 
+		_hud->SetStateInt("player_ammo", inclip);
+	}
+	else {
+		_hud->SetStateFloat("player_ammopct", (float)ammoamount / (float)weapon->maxAmmo);
+		_hud->SetStateInt("player_totalammo", ammoamount);
+		_hud->SetStateInt("player_ammo", -1);
+	}
+	_hud->SetStateString("player_ammotype", weapon->GetAmmoNameForIndex(weapon->ammoType));
+
+	_hud->SetStateInt("player_pistolFMJ", inventory.ammo[12]);
+	_hud->SetStateInt("player_pistolHP", inventory.ammo[13]);
+
+	_hud->SetStateInt("player_rifleFMJ", inventory.ammo[14]);
+	_hud->SetStateInt("player_rifleHP", inventory.ammo[15]);
+	_hud->SetStateInt("player_rifleAP", inventory.ammo[16]);
+
+	_hud->SetStateInt("player_sniperFMJ", inventory.ammo[17]);
+	_hud->SetStateInt("player_sniperBP", inventory.ammo[18]);
+	_hud->SetStateInt("player_sniperAP", inventory.ammo[19]);
+
+	_hud->SetStateInt("player_SMGFMJ", inventory.ammo[20]);
+	_hud->SetStateInt("player_SMGHP", inventory.ammo[21]);
+	_hud->SetStateInt("player_SMGAP", inventory.ammo[22]);
+
+	_hud->SetStateInt("player_slug", inventory.ammo[23]);
+
 
 	_hud->SetStateBool( "player_ammo_empty", ( ammoamount == 0 ) );
 }
@@ -5788,7 +5809,25 @@ void idPlayer::SelectWeapon( int num, bool force ) {
 		UpdateHudWeapon();
 	}
 }
+/*custom select ammo
+void idPlayer::SelectAmmo(int AT, bool force) {
+	const char* ammo;
 
+	//ammo = spawnArgs.GetString(va("def_ammo%s", AT));
+	if (!ammo[0]) {
+		gameLocal.Warning("Invalid ammo def_ammo\n");
+		return;
+	}
+	else {
+		inventory.ammo[AT];
+	}
+	// cycle in-between weapons
+	// if a weapon_def has a "def_weapon_swap" keyvalue pointing to another 
+	// weapon, hitting that impulse twice will cycle to the target swap. 
+	UpdateHudAmmo(hud);
+
+}
+*/
 /*
 =================
 idPlayer::DropItem
@@ -6192,7 +6231,7 @@ void idPlayer::Weapon_NPC( void ) {
 				talkingNPC = focusAI;
 			}
 		}
-	} else if ( currentWeapon == SlotForWeapon ( "weapon_blaster" ) ) {
+	} else if ( currentWeapon == SlotForWeapon ( "weapon_M1911A1" ) ) {
 		Weapon_Combat();
 	}
 }
@@ -8166,12 +8205,12 @@ int GetItemBuyImpulse( const char* itemName )
 	ItemBuyImpulse itemBuyImpulseTable[] =
 	{
 		{ "weapon_shotgun",					IMPULSE_100, },
-		{ "weapon_machinegun",				IMPULSE_101, },
+		{ "weapon_M4A1",				IMPULSE_101, },
 		{ "weapon_hyperblaster",			IMPULSE_102, },
-		{ "weapon_grenadelauncher",			IMPULSE_103, },
+		{ "weapon_Vector",			IMPULSE_103, },
 		{ "weapon_nailgun",					IMPULSE_104, },
 		{ "weapon_rocketlauncher",			IMPULSE_105, },
-		{ "weapon_railgun",					IMPULSE_106, },
+		{ "weapon_Glock18C",					IMPULSE_106, },
 		{ "weapon_lightninggun",			IMPULSE_107, },
 		//									IMPULSE_108 - Unused
 		{ "weapon_napalmgun",				IMPULSE_109, },
@@ -8192,7 +8231,6 @@ int GetItemBuyImpulse( const char* itemName )
 		{ "health_regen",					IMPULSE_124, },
 		{ "damage_boost",					IMPULSE_125, },
 		//									IMPULSE_126 - Unused
-		//									IMPULSE_127 - Unused
 	};
 	const int itemBuyImpulseTableSize = sizeof(itemBuyImpulseTable) / sizeof(itemBuyImpulseTable[0]);
 
@@ -8571,12 +8609,12 @@ void idPlayer::PerformImpulse( int impulse ) {
 // RITUAL BEGIN
 // squirrel: Mode-agnostic buymenus
 		case IMPULSE_100:	AttemptToBuyItem( "weapon_shotgun" );				break;
-		case IMPULSE_101:	AttemptToBuyItem( "weapon_machinegun" );			break;
+		case IMPULSE_101:	AttemptToBuyItem( "weapon_M4A1" );			break;
 		case IMPULSE_102:	AttemptToBuyItem( "weapon_hyperblaster" );			break;
-		case IMPULSE_103:	AttemptToBuyItem( "weapon_grenadelauncher" );		break;
+		case IMPULSE_103:	AttemptToBuyItem( "weapon_Vector" );		break;
 		case IMPULSE_104:	AttemptToBuyItem( "weapon_nailgun" );				break;
 		case IMPULSE_105:	AttemptToBuyItem( "weapon_rocketlauncher" );		break;
-		case IMPULSE_106:	AttemptToBuyItem( "weapon_railgun" );				break;
+		case IMPULSE_106:	AttemptToBuyItem( "weapon_Glock18C" );				break;
 		case IMPULSE_107:	AttemptToBuyItem( "weapon_lightninggun" );			break;
 		case IMPULSE_108:	break; // Unused
 		case IMPULSE_109:	AttemptToBuyItem( "weapon_napalmgun" );				break;
@@ -8597,7 +8635,6 @@ void idPlayer::PerformImpulse( int impulse ) {
 		case IMPULSE_124:	AttemptToBuyItem( "health_regen" );					break;
 		case IMPULSE_125:	AttemptToBuyItem( "damage_boost" );					break;
 		case IMPULSE_126:	break; // Unused
-		case IMPULSE_127:	break; // Unused
 // RITUAL END
 
 		case IMPULSE_50: {
@@ -8609,6 +8646,108 @@ void idPlayer::PerformImpulse( int impulse ) {
  			LastWeapon();
  			break;
  		}
+
+		case IMPULSE_127: {
+			if (currentWeapon == 0 || currentWeapon == 7) {
+				if (weapon->ammoType == 12) {
+					if ((inventory.HasAmmo(13, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 13;
+					}
+				}
+				else if ((inventory.HasAmmo(12,1) != 0) && (weapon->AmmoInClip() == 0)) {
+					weapon->ammoType = 12;
+				}
+			}
+			else if (currentWeapon == 1 || currentWeapon == 5 || currentWeapon == 6) {
+				if (weapon->ammoType == 14) {
+					if ((inventory.HasAmmo(15, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 15;
+					}
+					else if ((inventory.HasAmmo(16, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 16;
+					}
+				}
+				else if (weapon->ammoType == 15) {
+					if ((inventory.HasAmmo(16, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 16;
+					}
+					else if ((inventory.HasAmmo(14, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 14;
+					}
+				}
+				else if (weapon->ammoType == 16) {
+					if ((inventory.HasAmmo(14, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 14;
+					}
+					else if ((inventory.HasAmmo(15, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 15;
+					}
+				}
+			}
+			else if (currentWeapon == 8 || currentWeapon == 9) {
+				if (weapon->ammoType == 17) {
+					if ((inventory.HasAmmo(18, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 18;
+					}
+					else if ((inventory.HasAmmo(19, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 19;
+					}
+				}
+				else if (weapon->ammoType == 18) {
+					if ((inventory.HasAmmo(19, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 19;
+					}
+					else if ((inventory.HasAmmo(17, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 17;
+					}
+				}
+				else if (weapon->ammoType == 19) {
+					if ((inventory.HasAmmo(17, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 17;
+					}
+					else if ((inventory.HasAmmo(18, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 18;
+					}
+				}
+			}
+			else if (currentWeapon == 3 || currentWeapon == 4) {
+				if (weapon->ammoType == 20) {
+					if ((inventory.HasAmmo(21, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 21;
+					}
+					else if ((inventory.HasAmmo(22, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 22;
+					}
+				}
+				else if (weapon->ammoType == 21) {
+					if ((inventory.HasAmmo(22, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 22;
+					}
+					else if ((inventory.HasAmmo(20, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 20;
+					}
+				}
+				else if (weapon->ammoType == 22) {
+					if ((inventory.HasAmmo(20, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 20;
+					}
+					else if ((inventory.HasAmmo(21, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 21;
+					}
+				}
+			}
+			else if (currentWeapon == 2) {
+				if (weapon->ammoType == 5) {
+					if ((inventory.HasAmmo(23, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+						weapon->ammoType = 23;
+					}
+				}
+				else if ((inventory.HasAmmo(5, 1) != 0) && (weapon->AmmoInClip() == 0)) {
+					weapon->ammoType = 5;
+				}
+			}
+			break;
+		}
 	} 
 
 //RAVEN BEGIN
